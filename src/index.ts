@@ -1,7 +1,7 @@
 export default {
   async fetch(request) {
     const ALLOWED_ORIGIN = 'https://YOUR_DOMAIN'
-    const SECRET_KEY = 'CHANGE_THIS_SECRET'
+    const SECRET_KEY = 'h135355N'
     const reqUrl = new URL(request.url)
     const origin = request.headers.get('Origin') || ''
     const referer = request.headers.get('Referer') || ''
