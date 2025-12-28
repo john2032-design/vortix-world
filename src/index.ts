@@ -1,31 +1,35 @@
 export default {
   async fetch(request) {
-    const { searchParams } = new URL(request.url)
-    const target = searchParams.get('url')
+    const ALLOWED_ORIGIN = 'https://YOUR_DOMAIN'
+    const SECRET_KEY = 'CHANGE_THIS_SECRET'
+    const reqUrl = new URL(request.url)
+    const origin = request.headers.get('Origin') || ''
+    const referer = request.headers.get('Referer') || ''
 
+    if (!origin.startsWith(ALLOWED_ORIGIN) && !referer.startsWith(ALLOWED_ORIGIN)) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    if (reqUrl.searchParams.get('key') !== SECRET_KEY) {
+      return new Response(JSON.stringify({ error: 'Invalid key' }), { status: 403, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    const target = reqUrl.searchParams.get('url')
     if (!target || !target.startsWith('http')) {
-      return new Response(JSON.stringify({ error: 'Missing url' }), { status: 400 })
+      return new Response(JSON.stringify({ error: 'Missing url' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
     }
 
-    const providers = [
-      'https://ancient-dew-2472.fly.dev/api?url=',
-      'https://bypass.pm/bypass?url='
-    ]
-
-    for (const base of providers) {
-      try {
-        const r = await fetch(base + encodeURIComponent(target))
-        if (!r.ok) continue
-        const body = await r.text()
-        return new Response(body, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        })
-      } catch {}
+    try {
+      const r = await fetch('https://nigger-jet.vercel.app/bypass?url=' + encodeURIComponent(target))
+      const body = await r.text()
+      return new Response(body, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': ALLOWED_ORIGIN
+        }
+      })
+    } catch {
+      return new Response(JSON.stringify({ error: 'Upstream failed' }), { status: 502, headers: { 'Content-Type': 'application/json' } })
     }
-
-    return new Response(JSON.stringify({ error: 'All providers failed' }), { status: 502 })
   }
 }
