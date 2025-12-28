@@ -1,6 +1,6 @@
 export default {
   async fetch(request) {
-    const ALLOWED_ORIGIN = 'https://YOUR_DOMAIN'
+    const ALLOWED_ORIGIN = 'https://vortix-world-bypass.vercel.app/'
     const SECRET_KEY = 'h135355N'
     const reqUrl = new URL(request.url)
     const origin = request.headers.get('Origin') || ''
