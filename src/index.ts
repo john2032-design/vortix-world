@@ -15,18 +15,25 @@ export default {
     }
 
     const target = reqUrl.searchParams.get('url')
-    if (!target || !target.startsWith('http')) {
+    if (!target || !target.startsWith('https://')) {
       return new Response(JSON.stringify({ status: 'error' }), { status: 400 })
     }
 
     try {
       const r = await fetch('https://nigger-jet.vercel.app/bypass?url=' + encodeURIComponent(target))
-      const j = await r.json()
+      const text = await r.text()
+
+      let data
+      try {
+        data = JSON.parse(text)
+      } catch {
+        data = { status: 'success', result: text, time_taken: 0 }
+      }
 
       return new Response(JSON.stringify({
-        status: j.status || 'error',
-        time_taken: j.time_taken || 0,
-        result: j.result || ''
+        status: data.status || 'error',
+        time_taken: data.time_taken || 0,
+        result: data.result || ''
       }), {
         headers: {
           'Content-Type': 'application/json',
